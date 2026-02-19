@@ -19,5 +19,6 @@ const UserSchema = new mongoose.Schema({
   verificationToken: { type: String },
   verificationExpires: { type: Date }
 }, { timestamps: true })
+UserSchema.index({ verificationExpires: 1 }, { expireAfterSeconds: 0 })
 
 module.exports = mongoose.model("User", UserSchema)
