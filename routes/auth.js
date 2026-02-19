@@ -43,9 +43,11 @@ router.post("/register", async (req, res) => {
 
     res.json({ message: "Email xác thực đã được gửi." })
 
-  } catch (err) {
-    res.status(500).json({ message: "Server error" })
-  }
+  }catch (err) {
+  console.error("REGISTER ERROR:", err)
+  res.status(500).json({ message: err.message })
+}
+
 })
 router.get("/verify/:token", async (req, res) => {
   try {
