@@ -8,7 +8,7 @@ const emailApi = new SibApiV3Sdk.TransactionalEmailsApi()
 
 const sendVerificationEmail = async (email, token) => {
   try {
-    const verificationLink = `https://qltn.vercel.app/api/auth/verify/${token}`
+    const verificationLink = `https://qltn-be.onrender.com/api/auth/verify/${token}`
 
     const emailData = {
       sender: {
