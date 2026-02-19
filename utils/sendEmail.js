@@ -23,7 +23,7 @@ const sendVerificationEmail = async (email, token) => {
           style="padding:10px 15px; background:#4CAF50; color:white; text-decoration:none;">
           Xác minh tài khoản
         </a>
-        <p>Đường dẫn này sẽ hết hiệu lực sau 3 phút.</p>
+        <p>Đường dẫn này sẽ hết hiệu lực sau 5 phút.</p>
       `
     })
 

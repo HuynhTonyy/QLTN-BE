@@ -13,9 +13,11 @@ router.get("/admin-data", protect, adminOnly, (req, res) => {
 
 router.post("/register", async (req, res) => {
   try {
+    console.log("Start register")
     const { username, email, password } = req.body
 
     const existingUser = await User.findOne({ email })
+    console.log("After findOne")
     if (existingUser)
       return res.status(400).json({ message: "Email đã được sử dụng!" })
 
@@ -29,18 +31,25 @@ router.post("/register", async (req, res) => {
       password: hashedPassword,
       role: "DQ", 
       verificationToken: token,
-      verificationExpires: Date.now() + 3 * 60 * 1000 // 3 minutes
+      verificationExpires: new Date(Date.now() + 5 * 60 * 1000)
     })
     await newUser.save()
+    console.log("User saved")
 
-    try {
-      await sendVerificationEmail(email, token)
-    } catch (err) {
-      await User.deleteOne({ email })
-      return res.status(500).json({ message: "Gửi mã xác thực thất bại." })
-    }
+sendVerificationEmail(email, token)
+  .then(() => console.log("Email success"))
+  .catch(async (err) => {
+    console.error("Email failed:", err)
+    await User.deleteOne({ email })
+  })
 
 
+
+
+    // sendVerificationEmail(email, token).catch(async (err) => {
+    //   console.error("Email failed:", err)
+    //   await User.deleteOne({ email })
+    // })
     res.json({ message: "Email xác thực đã được gửi." })
 
   }catch (err) {
