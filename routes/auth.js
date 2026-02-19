@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs")
 // Register
 const crypto = require("crypto")
 const sendVerificationEmail = require("../utils/sendEmail")
-const { protect, adminOnly } = require("./middleware/authMiddleware")
+const { protect, adminOnly } = require("../middleware/authMiddleWare")
 
 router.get("/admin-data", protect, adminOnly, (req, res) => {
   res.json({ message: "Welcome admin" })
