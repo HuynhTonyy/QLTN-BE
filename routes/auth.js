@@ -35,13 +35,9 @@ router.post("/register", async (req, res) => {
     })
     await newUser.save()
     console.log("User saved")
+    sendVerificationEmail(email, token)
+      .catch(err => console.error(err))
 
-sendVerificationEmail(email, token)
-  .then(() => console.log("Email success"))
-  .catch(async (err) => {
-    console.error("Email failed:", err)
-    await User.deleteOne({ email })
-  })
 
 
 
