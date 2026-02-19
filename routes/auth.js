@@ -27,6 +27,7 @@ router.post("/register", async (req, res) => {
       username,
       email,
       password: hashedPassword,
+      role: "DQ", 
       verificationToken: token,
       verificationExpires: Date.now() + 3 * 60 * 1000 // 3 minutes
     })
