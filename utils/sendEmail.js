@@ -9,7 +9,7 @@ const transporter = nodemailer.createTransport({
 })
 
 const sendVerificationEmail = async (email, token) => {
-  const verificationLink = `http://localhost:5000/api/auth/verify/${token}`
+  const verificationLink = `https://qltn-be.onrender.com/api/auth/verify/${token}`
   await transporter.sendMail({
     from: process.env.EMAIL_USER,
     to: email,
