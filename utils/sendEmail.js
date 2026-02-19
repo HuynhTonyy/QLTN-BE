@@ -7,10 +7,8 @@ apiKey.apiKey = process.env.BREVO_API_KEY
 const emailApi = new SibApiV3Sdk.TransactionalEmailsApi()
 
 const sendVerificationEmail = async (email, token) => {
-  console.log("BREVO KEY:", process.env.BREVO_API_KEY)
-
   try {
-    const verificationLink = `https://qltn-be.onrender.com/api/auth/verify/${token}`
+    const verificationLink = `https://qltn.vercel.app/api/auth/verify/${token}`
 
     const emailData = {
       sender: {
