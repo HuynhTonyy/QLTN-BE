@@ -10,7 +10,11 @@ const UserSchema = new mongoose.Schema({
     trim: true
   },
   password: { type: String, required: true },
-  
+  role: {
+    type: String,
+    enum: ["Admin","BCHTQ","BCH","DQ"],
+    default: "DQ"
+  },
   isVerified: { type: Boolean, default: false },
   verificationToken: { type: String },
   verificationExpires: { type: Date }

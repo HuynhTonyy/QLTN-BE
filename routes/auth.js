@@ -5,6 +5,11 @@ const bcrypt = require("bcryptjs")
 // Register
 const crypto = require("crypto")
 const sendVerificationEmail = require("../utils/sendEmail")
+const { protect, adminOnly } = require("./middleware/authMiddleware")
+
+router.get("/admin-data", protect, adminOnly, (req, res) => {
+  res.json({ message: "Welcome admin" })
+})
 
 router.post("/register", async (req, res) => {
   try {
@@ -12,7 +17,7 @@ router.post("/register", async (req, res) => {
 
     const existingUser = await User.findOne({ email })
     if (existingUser)
-      return res.status(400).json({ message: "Email already registered" })
+      return res.status(400).json({ message: "Email đã được sử dụng!" })
 
     const hashedPassword = await bcrypt.hash(password, 10)
 
@@ -31,11 +36,11 @@ router.post("/register", async (req, res) => {
       await sendVerificationEmail(email, token)
     } catch (err) {
       await User.deleteOne({ email })
-      return res.status(500).json({ message: "Email failed" })
+      return res.status(500).json({ message: "Gửi mã xác thực thất bại." })
     }
 
 
-    res.json({ message: "Verification email sent" })
+    res.json({ message: "Email xác thực đã được gửi." })
 
   } catch (err) {
     res.status(500).json({ message: "Server error" })
@@ -49,7 +54,7 @@ router.get("/verify/:token", async (req, res) => {
     })
     
     if (!user) {
-      return res.status(400).send("Verification link expired or invalid")
+      return res.status(400).send("Đường dẫn xác thực quá hạn hoặc không hợp lệ.")
     }
 
     user.isVerified = true
@@ -58,10 +63,10 @@ router.get("/verify/:token", async (req, res) => {
 
     await user.save()
 
-    res.send("Account verified successfully")
+    res.send("Tài khoản xác minh thành công!")
 
   } catch (err) {
-    res.status(500).send("Server error")
+    res.status(500).send("Lỗi server!")
   }
 })
 
