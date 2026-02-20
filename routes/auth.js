@@ -42,6 +42,30 @@ router.post("/register", async (req, res) => {
 }
 
 })
+router.post("/login", async (req, res) => {
+  try {
+    const { email, password } = req.body
+
+    const user = await User.findOne({ email })
+    if (!user) {
+      return res.status(400).json({ message: "Email không tồn tại" })
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) {
+      return res.status(400).json({ message: "Sai mật khẩu" })
+    }
+
+    if(!user.isAccepted){
+      return res.status(400).json({ message: "Tài khoản chưa được chấp thuận. Vui lòng chờ." })
+    }
+    res.json({ message: "Đăng nhập thành công" })
+
+  } catch (err) {
+    console.error("Login error:", err)
+    res.status(500).json({ message: "Server error" })
+  }
+})
 router.get("/verify/:token", async (req, res) => {
   try {
     const user = await User.findOne({
@@ -53,7 +77,7 @@ router.get("/verify/:token", async (req, res) => {
       return res.status(400).send("Đường dẫn xác thực quá hạn hoặc không hợp lệ.")
     }
 
-    user.isVerified = true
+    user.isVerifiedEmail = true
     user.verificationToken = undefined
     user.verificationExpires = undefined
 
