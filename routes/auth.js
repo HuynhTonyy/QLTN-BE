@@ -48,12 +48,12 @@ router.post("/login", async (req, res) => {
 
     const user = await User.findOne({ email })
     if (!user) {
-      return res.status(400).json({ message: "Email không tồn tại" })
+      return res.status(400).json({ message: "Tài khoản không hợp lệ." })
     }
 
     const isMatch = await bcrypt.compare(password, user.password)
     if (!isMatch) {
-      return res.status(400).json({ message: "Sai mật khẩu" })
+      return res.status(400).json({ message: "Mật khẩu không chính xác." })
     }
 
     if(!user.isAccepted){
@@ -77,7 +77,7 @@ router.get("/verify/:token", async (req, res) => {
       return res.status(400).send("Đường dẫn xác thực quá hạn hoặc không hợp lệ.")
     }
 
-    user.isVerifiedEmail = true
+    user.isVerified = true
     user.verificationToken = undefined
     user.verificationExpires = undefined
 
