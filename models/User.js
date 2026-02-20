@@ -18,7 +18,7 @@ const UserSchema = new mongoose.Schema({
   isVerified: { type: Boolean, default: false },
   verificationToken: { type: String },
   verificationExpires: { type: Date },
-  isAccepted: {type: string, default: false},
+  isAccepted: {type: String, default: false},
 }, { timestamps: true })
 UserSchema.index({ verificationExpires: 1 }, { expireAfterSeconds: 0 })
 
