@@ -1,15 +1,13 @@
 const router = require("express").Router()
 const User = require("../models/User")
 const bcrypt = require("bcryptjs")
-
-// Register
 const crypto = require("crypto")
 const sendVerificationEmail = require("../utils/sendEmail")
-const { protect, adminOnly } = require("../middleware/authMiddleWare")
+const { protect, authorize } = require("../middleware/authMiddleWare")
+const generateToken = require("../utils/generateToken")
 
-router.get("/admin-data", protect, adminOnly, (req, res) => {
-  res.json({ message: "Welcome admin" })
-})
+
+
 
 router.post("/register", async (req, res) => {
   try {
@@ -42,6 +40,7 @@ router.post("/register", async (req, res) => {
 }
 
 })
+
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body
@@ -59,13 +58,24 @@ router.post("/login", async (req, res) => {
     if(!user.isAccepted){
       return res.status(400).json({ message: "Tài khoản chưa được chấp thuận. Vui lòng chờ." })
     }
-    res.json({ message: "Đăng nhập thành công" })
+    const token = generateToken(user)
+    
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: true, // true in production
+      sameSite: "Lax",
+      maxAge: 15 * 60 * 1000
+    });
 
   } catch (err) {
     console.error("Login error:", err)
     res.status(500).json({ message: "Server error" })
   }
 })
+router.post("/logout", (req, res) => {
+  res.clearCookie("token");
+  res.json({ message: "Đăng xuất!" });
+});
 router.get("/verify/:token", async (req, res) => {
   try {
     const user = await User.findOne({
@@ -89,7 +99,9 @@ router.get("/verify/:token", async (req, res) => {
     res.status(500).send("Lỗi server!")
   }
 })
-
+router.get("/admin", protect, authorize("admin"), (req, res) => {
+  res.json({ message: "Admin access" });
+});
 
 
 module.exports = router
