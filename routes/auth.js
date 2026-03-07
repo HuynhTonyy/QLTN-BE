@@ -6,7 +6,7 @@ const sendVerificationEmail = require("../utils/sendEmail")
 const { protect, authorize } = require("../middleware/authMiddleWare")
 const generateToken = require("../utils/generateToken")
 const ROLES = require("../constants/roles")
-
+const isProduction = process.env.NODE_ENV === "production"
 
 
 router.post("/register", async (req, res) => {
@@ -66,7 +66,7 @@ router.post("/login", async (req, res) => {
     
     res.cookie("token", token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
+      secure: isProduction,
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: "/"
