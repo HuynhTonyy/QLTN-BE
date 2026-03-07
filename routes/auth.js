@@ -5,7 +5,7 @@ const crypto = require("crypto")
 const sendVerificationEmail = require("../utils/sendEmail")
 const { protect, authorize } = require("../middleware/authMiddleWare")
 const generateToken = require("../utils/generateToken")
-
+const ROLES = require("../constants/roles")
 
 
 
@@ -49,24 +49,35 @@ router.post("/login", async (req, res) => {
     if (!user) {
       return res.status(400).json({ message: "Tài khoản không hợp lệ." })
     }
-
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) {
-      return res.status(400).json({ message: "Mật khẩu không chính xác." })
+    if (!user.isVerified) {
+      return res.status(400).json({
+        message: "Vui lòng xác thực tài khoản thông qua email trước khi đăng nhập."
+      })
     }
 
     if(!user.isAccepted){
       return res.status(400).json({ message: "Tài khoản chưa được chấp thuận. Vui lòng chờ." })
     }
+    const isMatch = await bcrypt.compare(password, user.password)
+    if (!isMatch) {
+      return res.status(400).json({ message: "Mật khẩu không chính xác." })
+    }
     const token = generateToken(user)
     
     res.cookie("token", token, {
       httpOnly: true,
-      secure: true,
-      sameSite: "Strict",
-      maxAge: 15 * 60 * 1000
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/"
     });
-
+    res.json({
+      message: "Đăng nhập thành công!",
+      user: {
+        id: user._id,
+        role: user.role
+      }
+    })
   } catch (err) {
     console.error("Login error:", err)
     res.status(500).json({ message: "Server error" })
@@ -76,6 +87,10 @@ router.post("/logout", (req, res) => {
   res.clearCookie("token");
   res.json({ message: "Đăng xuất!" });
 });
+router.get("/me", protect, async (req, res) => {
+  const user = await User.findById(req.user.id).select("-password")
+  res.json(user)
+})
 router.get("/verify/:token", async (req, res) => {
   try {
     const user = await User.findOne({
@@ -99,9 +114,9 @@ router.get("/verify/:token", async (req, res) => {
     res.status(500).send("Lỗi server!")
   }
 })
-router.get("/admin", protect, authorize("admin"), (req, res) => {
+router.get("/admin", protect, authorize(ROLES.ADMIN), (req, res) => {
   res.json({ message: "Admin access" });
-});
+}); 
 
 
 module.exports = router
