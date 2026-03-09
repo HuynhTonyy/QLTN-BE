@@ -25,7 +25,7 @@ router.post("/register", async (req, res) => {
       username,
       email,
       password: hashedPassword,
-      role: "DQ", 
+      role: ROLES.DQ, 
       verificationToken: token,
       verificationExpires: new Date(Date.now() + 5 * 60 * 1000)
     })
@@ -46,9 +46,11 @@ router.post("/login", async (req, res) => {
     const { email, password } = req.body
 
     const user = await User.findOne({ email })
-    if (!user) {
-      return res.status(400).json({ message: "Tài khoản không hợp lệ." })
-    }
+    if (!user || !(await bcrypt.compare(password, user.password))) {
+      return res.status(400).json({
+        message: "Email hoặc mật khẩu không đúng."
+      })
+    } 
     if (!user.isVerified) {
       return res.status(400).json({
         message: "Vui lòng xác thực tài khoản thông qua email trước khi đăng nhập."
@@ -57,10 +59,6 @@ router.post("/login", async (req, res) => {
 
     if(!user.isAccepted){
       return res.status(400).json({ message: "Tài khoản chưa được chấp thuận. Vui lòng chờ." })
-    }
-    const isMatch = await bcrypt.compare(password, user.password)
-    if (!isMatch) {
-      return res.status(400).json({ message: "Mật khẩu không chính xác." })
     }
     const token = generateToken(user)
     
@@ -88,8 +86,21 @@ router.post("/logout", (req, res) => {
   res.json({ message: "Đăng xuất!" });
 });
 router.get("/me", protect, async (req, res) => {
-  const user = await User.findById(req.user.id).select("-password")
-  res.json(user)
+  try {
+
+    const user = await User
+      .findById(req.user.id)
+      .select("-password")
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" })
+    }
+
+    res.json({ user })
+
+  } catch (err) {
+    res.status(500).json({ message: "Server error" })
+  }
 })
 router.get("/verify/:token", async (req, res) => {
   try {

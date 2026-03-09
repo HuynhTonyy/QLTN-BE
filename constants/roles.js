@@ -1,6 +1,6 @@
 module.exports = {
     ADMIN : "Admin",
     BCH: "BCH",
-    BCNTQ: "BCHTQ",
+    BCHTQ: "BCHTQ",
     DQ: "DQ"
 }
