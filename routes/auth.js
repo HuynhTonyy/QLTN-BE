@@ -70,7 +70,7 @@ router.post("/login", async (req, res) => {
       path: "/"
     });
     res.json({
-      message: "Đăng nhập thành công!",
+      message: "Đăng nhập thành công!" + isProduction,
       user: {
         id: user._id,
         role: user.role
