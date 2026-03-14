@@ -4,7 +4,14 @@ const ROLES = require("../constants/roles")
 const { protect, authorize } = require("../middleware/authMiddleWare")
 
 router.use(protect, authorize(ROLES.ADMIN))
+router.get("/users/pending", async (req, res) => {
+  const users = await User.find({
+    isAccepted: false,
+    isVerified: true
+  }).select("-password")
 
+  res.json(users)
+})
 router.get("/users", async (req, res) => {
   const users = await User.find().select("-password")
   res.json(users)
