@@ -16,7 +16,9 @@ router.get("/users", async (req, res) => {
   try {
 
     const users = await User.find({
-      _id: { $ne: req.user.id }
+      _id: { $ne: req.user.id },
+       isAccepted: true,
+        isVerified: true
     }).select("-password")
 
     res.json(users)
