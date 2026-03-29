@@ -28,7 +28,25 @@ router.get("/users", async (req, res) => {
     res.status(500).json({ message: "Server error" })
   }
 })
+router.patch("/users/:id", async (req, res) => {
+  try {
+    const { username, email, role } = req.body
 
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        username,
+        email,
+        role,
+      },
+      { new: true, runValidators: true }
+    )
+
+    res.json(updatedUser)
+  } catch (err) {
+    res.status(500).json({ message: "Update failed" })
+  }
+})
 router.patch("/users/:id/accept", async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { status: status.PENDING })
   res.json({ message: "User accepted" })
