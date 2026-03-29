@@ -47,7 +47,7 @@ router.patch("/users/:id", async (req, res) => {
   }
 })
 router.patch("/users/:id/accept", async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { status: status.PENDING })
+  await User.findByIdAndUpdate(req.params.id, { status: status.ACTIVE })
   res.json({ message: "User accepted" })
 })
 router.delete
