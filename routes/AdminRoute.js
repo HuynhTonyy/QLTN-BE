@@ -30,13 +30,12 @@ router.get("/users", async (req, res) => {
 })
 router.patch("/users/:id", async (req, res) => {
   try {
-    const { username, email, role } = req.body
+    const { username, role } = req.body
 
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
         username,
-        email,
         role,
       },
       { new: true, runValidators: true }
