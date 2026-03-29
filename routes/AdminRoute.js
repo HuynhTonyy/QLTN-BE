@@ -38,5 +38,18 @@ router.patch("/users/:id/role", async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { role })
   res.json({ message: "Role updated" })
 })
+// routes/admin.js
+router.get("/stats", async (req, res) => {
+  try {
+    const totalUsers = await User.countDocuments()
+    const pendingUsers = await User.countDocuments({ status: "PENDING" })
 
+    res.json({
+      totalUsers,
+      pendingUsers,
+    })
+  } catch (err) {
+    res.status(500).json({ message: "Server error" })
+  }
+})
 module.exports = router
