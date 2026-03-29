@@ -25,8 +25,8 @@ const UserSchema = new mongoose.Schema({
     enum: [ status.ACTIVE , status.PENDING , status.SUSPENDED],
     default: status.PENDING
   },
-  isDeleted: false,
-  deletedAt: null
+  isDeleted: {type: Boolean, default: false},
+  deletedAt: {type: Date}
 }, { timestamps: true })
 UserSchema.index({ verificationExpires: 1 }, { expireAfterSeconds: 0 })
 
