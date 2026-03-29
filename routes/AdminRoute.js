@@ -32,6 +32,7 @@ router.patch("/users/:id/accept", async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { isAccepted: true })
   res.json({ message: "User accepted" })
 })
+router.delete
 
 router.patch("/users/:id/role", async (req, res) => {
   const { role } = req.body

@@ -6,6 +6,7 @@ const sendVerificationEmail = require("../utils/sendEmail")
 const { protect, authorize } = require("../middleware/authMiddleWare")
 const generateToken = require("../utils/generateToken")
 const ROLES = require("../constants/roles")
+const status = require("../constants/status")
 const isProduction = process.env.NODE_ENV === "production"
 
 
@@ -57,7 +58,7 @@ router.post("/login", async (req, res) => {
       })
     }
 
-    if(!user.isAccepted){
+    if(user.status !== status.ACTIVE){
       return res.status(400).json({ message: "Tài khoản chưa được chấp thuận. Vui lòng chờ." })
     }
     const token = generateToken(user)
@@ -125,10 +126,5 @@ router.get("/verify/:token", async (req, res) => {
     res.status(500).send("Lỗi server!")
   }
 })
-router.get("/admin", protect, authorize(ROLES.ADMIN), (req, res) => {
-  res.json({ message: "Admin access" });
-}); 
-
-
 module.exports = router
     

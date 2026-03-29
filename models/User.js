@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+const roles = require("../constants/roles")
+const status = require("../constants/status")
 
 const UserSchema = new mongoose.Schema({
   username: { type: String, required: true },
@@ -12,13 +14,19 @@ const UserSchema = new mongoose.Schema({
   password: { type: String, required: true },
   role: {
     type: String,
-    enum: ["Admin","BCHTQ","BCH","DQ"],
-    default: "DQ"
+    enum: [roles.ADMIN,roles.BCH,roles.BCHTQ,roles.DQ],
+    default: roles.DQ
   },
   isVerified: { type: Boolean, default: false },
   verificationToken: { type: String },
   verificationExpires: { type: Date },
-  isAccepted: {type: Boolean, default: false},
+  status:{
+    type: String,
+    enum: [ status.ACTIVE , status.PENDING , status.SUSPENDED],
+    default: status.PENDING
+  },
+  isDeleted: false,
+  deletedAt: null
 }, { timestamps: true })
 UserSchema.index({ verificationExpires: 1 }, { expireAfterSeconds: 0 })
 
