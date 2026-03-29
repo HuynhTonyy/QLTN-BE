@@ -44,7 +44,7 @@ router.patch("/users/:id/role", async (req, res) => {
 router.get("/stats", async (req, res) => {
   try {
     const totalUsers = await User.countDocuments()
-    const pendingUsers = await User.countDocuments({ status: "PENDING" })
+    const pendingUsers = await User.countDocuments({ status: status.PENDING })
 
     res.json({
       totalUsers,
