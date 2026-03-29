@@ -2,11 +2,12 @@ const router = require("express").Router()
 const User = require("../models/User")
 const ROLES = require("../constants/roles")
 const { protect, authorize } = require("../middleware/authMiddleWare")
+const status = require("../constants/status")
 
 router.use(protect, authorize(ROLES.ADMIN))
 router.get("/users/pending", async (req, res) => {
   const users = await User.find({
-    isAccepted: false,
+    status: status.PENDING,
     isVerified: true
   }).select("-password")
 
@@ -17,7 +18,7 @@ router.get("/users", async (req, res) => {
 
     const users = await User.find({
       _id: { $ne: req.user.id },
-       isAccepted: true,
+       status: status.ACTIVE,
         isVerified: true
     }).select("-password")
 
@@ -29,7 +30,7 @@ router.get("/users", async (req, res) => {
 })
 
 router.patch("/users/:id/accept", async (req, res) => {
-  await User.findByIdAndUpdate(req.params.id, { isAccepted: true })
+  await User.findByIdAndUpdate(req.params.id, { status: status.PENDING })
   res.json({ message: "User accepted" })
 })
 router.delete
