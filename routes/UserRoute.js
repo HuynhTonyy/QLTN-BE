@@ -5,7 +5,7 @@ const { protect, authorize } = require("../middleware/authMiddleWare")
 const status = require("../constants/status")
 
 router.use(protect, authorize(ROLES.ADMIN))
-router.get("/users/pending", async (req, res) => {
+router.get("/pending", async (req, res) => {
   const users = await User.find({
     status: status.PENDING,
     isVerified: true
@@ -13,7 +13,7 @@ router.get("/users/pending", async (req, res) => {
 
   res.json(users)
 })
-router.get("/users", async (req, res) => {
+router.get("/", async (req, res) => {
   try {
 
     const users = await User.find({
@@ -28,7 +28,7 @@ router.get("/users", async (req, res) => {
     res.status(500).json({ message: "Server error" })
   }
 })
-router.patch("/users/:id", async (req, res) => {
+router.patch("/:id", async (req, res) => {
   try {
     const { username, role } = req.body
 
@@ -40,23 +40,17 @@ router.patch("/users/:id", async (req, res) => {
       },
       { new: true, runValidators: true }
     )
-
     res.json(updatedUser)
   } catch (err) {
-    res.status(500).json({ message: "Update failed" })
+    res.status(500).json({ message: err })
   }
 })
-router.patch("/users/:id/accept", async (req, res) => {
+router.patch("/:id/accept", async (req, res) => {
   await User.findByIdAndUpdate(req.params.id, { status: status.ACTIVE })
   res.json({ message: "User accepted" })
 })
 router.delete
 
-router.patch("/users/:id/role", async (req, res) => {
-  const { role } = req.body
-  await User.findByIdAndUpdate(req.params.id, { role })
-  res.json({ message: "Role updated" })
-})
 // routes/admin.js
 router.get("/stats", async (req, res) => {
   try {
